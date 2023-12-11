@@ -1,0 +1,30 @@
+import RPi.GPIO as GPIO
+
+# Rotary Encoder Pins
+DT = 22  # GPIO pin connected to Pin A of the rotary encoder
+CLK = 10  # GPIO pin connected to Pin B of the rotary encoder
+
+# Set up GPIO mode and pins
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(DT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(CLK, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+counter = 0
+
+def rotary_callback(channel):
+    global counter
+    if GPIO.input(CLK):  # Check the state of the CLK pin
+        counter += 1  # Increment counter if CLK is high
+    else:
+        counter -= 1  # Decrement counter if CLK is low
+    print(f"Encoder count: {counter}")
+
+# Set up interrupts for both CLK and DT pins
+GPIO.add_event_detect(CLK, GPIO.BOTH, callback=rotary_callback, bouncetime=10)
+
+try:
+    while True:
+        pass  # Keep the script running
+
+except KeyboardInterrupt:
+    GPIO.cleanup()
